@@ -1,0 +1,29 @@
+---
+name: Qwiet pre-zero Demo1
+
+on:
+  pull_request:
+  workflow_dispatch:
+  push:
+  
+jobs:
+  Qwiet-Static-Analysis:
+    runs-on: ubuntu-latest
+    container: shiftleft/core:latest
+
+
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Download ShiftLeft CLI
+      run: |
+        curl https://cdn.shiftleft.io/download/sl > ./sl && chmod a+rx ./sl 
+
+    - name: Run sl analyze 1
+      shell: bash
+      run: |
+        export SYFT_JAVASCRIPT_INCLUDE_DEV_DEPENDENCIES=true
+        SYFT_JAVASCRIPT_INCLUDE_DEV_DEPENDENCIES=true ./sl analyze --verbose --wait --app "${GITHUB_REPOSITORY#*/}" --sca-only-upload --jssrc .
+      env:
+        SHIFTLEFT_ACCESS_TOKEN: ${{ secrets.SHIFTLEFT_ACCESS_TOKEN }}
